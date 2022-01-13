@@ -24,6 +24,8 @@ class Board:
         self.players.append(Player(True))
         self.players.append(Player(False))
         self.turn_white = True
+        self.game_over = False  # checkmate has occurred?
+        self.current_move = 1
 
     def __repr__(self, ):
         board_string = ""
