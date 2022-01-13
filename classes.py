@@ -1,14 +1,12 @@
 
 
 class Pawn:
-        """
-
-        sus
-        amogus
-        """
-
     def __init__(self, coordinates, white):
+        """
 
+        :param coordinates:
+        :param white:
+        """
         self.name = name
         self.tricks = []    # creates a new empty list for each dog
 
