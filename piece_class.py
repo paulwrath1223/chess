@@ -24,4 +24,10 @@ class Piece:
     def get_pos(self):
         return self.coordinates
 
+    def get_color(self) -> bool:
+        """
+        :return: true if it is a white piece
+        """
+        return self.white
+
 

@@ -23,7 +23,6 @@ class Board:
         self.players = []
         self.players.append(Player(True))
         self.players.append(Player(False))
-        print(self.players)
         self.turn_white = True
 
     def __repr__(self, ):
@@ -33,7 +32,7 @@ class Board:
             for x in range(8):
                 piece = self.find_piece_by_coordinate([x, y])
                 # print(f"{x},{y}: {piece}")
-                if piece is not None:
+                if type(piece) is Piece:
                     board_string += P if piece.white else G
                     board_string += piece.figure_kind + " " + W
                 else:
@@ -45,14 +44,14 @@ class Board:
     def find_piece_by_coordinate(self, coordinate: list):
         """Finds if coordinate is occupied or if there is a piece
         :param coordinate: [x, y]
-        :return: class Piece
+        :return: class Piece or string "out of bounds"
         """
+        # TODO: returns two different types, is it needed?
         for player in self.players:
             for piece in player.pieces:
                 if piece.get_pos() == coordinate:
                     return piece
         return "Out of bounds"
-
 
     def find_possible_moves(self, piece):
         rows, cols = (8, 8)
@@ -63,9 +62,9 @@ class Board:
             else:
                 yIncrement = -1
             # Need to add case for en passant
-            pawnTakeLeftCoords = (piece.coordinates[0]-1, piece.coordinates[1]+yIncrement)
+            pawnTakeLeftCoords = (piece.coordinates[0] - 1, piece.coordinates[1] + yIncrement)
             if (self.find_piece_by_coordinate(pawnTakeLeftCoords) is not None and
-            self.find_piece_by_coordinate(pawnTakeLeftCoords) != "Out of bounds"):
+                    self.find_piece_by_coordinate(pawnTakeLeftCoords) != "Out of bounds"):
                 possibleMoveArray[pawnTakeLeftCoords[0]][pawnTakeLeftCoords[1]] = True
 
             pawnTakeRightCoords = (piece.coordinates[0] + 1, piece.coordinates[1] + yIncrement)
@@ -75,10 +74,10 @@ class Board:
 
             pawnAdvanceOneCoords = (piece.coordinates[0], piece.coordinates[1] + yIncrement)
             if (self.find_piece_by_coordinate(pawnAdvanceOneCoords) is None and
-            self.find_piece_by_coordinate(pawnAdvanceOneCoords) != "Out of bounds"):
+                    self.find_piece_by_coordinate(pawnAdvanceOneCoords) != "Out of bounds"):
                 possibleMoveArray[pawnAdvanceOneCoords[0]][pawnAdvanceOneCoords[1]] = True
 
-            pawnAdvanceTwoCoords = (piece.coordinates[0], piece.coordinates[1] + (2*yIncrement))
+            pawnAdvanceTwoCoords = (piece.coordinates[0], piece.coordinates[1] + (2 * yIncrement))
             if (self.find_piece_by_coordinate(pawnAdvanceTwoCoords) is None and
                     self.find_piece_by_coordinate(pawnAdvanceOneCoords) is None and not piece.moved):
                 possibleMoveArray[pawnAdvanceTwoCoords[0]][pawnAdvanceTwoCoords[1]] = True
