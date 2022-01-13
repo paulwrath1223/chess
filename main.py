@@ -23,15 +23,19 @@ def chess_notation_to_code_notation(a):
     return b
 
 
-print(_board)
+print(_board.print_board())
 
 gameOver = False   # checkmate has occurred?
 currentMove = 1
 whitesTurn = True   # true means that it is currently white's move
 while not gameOver:
     print("Turn " + str(currentMove) + ". ")
-    if whitesTurn:
+    if _board.turn_white():
         pieceToBeMoved = input("enter the coordinates of the piece you would like to move: (in form \"a1\") : ").lower()
         coordPieceToBeMoved = chess_notation_to_code_notation(
-            (pieceToBeMoved[0],pieceToBeMoved[1]))
+            (pieceToBeMoved[0], pieceToBeMoved[1]))
+        print(code_notation_to_chess_notation(coordPieceToBeMoved))
         print(coordPieceToBeMoved)
+        print(_board.print_board(_board.find_possible_moves(_board.find_piece_by_coordinate(
+            coordPieceToBeMoved))))
+

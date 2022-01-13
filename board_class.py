@@ -5,6 +5,7 @@ Board class
 import board_class
 from piece_class import Piece
 from player_class import Player
+from colorama import Fore, Back, Style
 
 # console colors
 W = '\033[0m'  # white (normal)
@@ -26,7 +27,10 @@ class Board:
         print(self.players)
         self.turn_white = True
 
-    def __repr__(self, ):
+    def print_board(self, highlight=None):
+        if highlight is None:
+            rows, cols = (8, 8)
+            highlight = [[False] * cols] * rows
         board_string = ""
         for y in range(7, -1, -1):
             board_string += (str(y + 1) + " | ")
@@ -34,25 +38,29 @@ class Board:
                 piece = self.find_piece_by_coordinate([x, y])
                 # print(f"{x},{y}: {piece}")
                 if piece is not None:
-                    board_string += P if piece.white else G
-                    board_string += piece.figure_kind + " " + W
+                    if highlight[x][y]:
+                        board_string += R if piece.white else B
+                        board_string += piece.figure_kind + " " + W
+                    else:
+                        board_string += P if piece.white else G
+                        board_string += piece.figure_kind + " " + W
                 else:
                     board_string += ". "
             board_string += "\n"
         board_string += "    a|b|c|d|e|f|g|h"
         return board_string
 
-    def find_piece_by_coordinate(self, coordinate: list):
+    def find_piece_by_coordinate(self, coordinate) -> Piece:
         """Finds if coordinate is occupied or if there is a piece
-        :param coordinate: [x, y]
+        :param coordinate: (x, y)
         :return: class Piece
         """
+        print("call function \"find_piece_by_coordinate\" with coord of " + str(coordinate))
         for player in self.players:
             for piece in player.pieces:
                 if piece.get_pos() == coordinate:
+                    print("found piece")
                     return piece
-        return "Out of bounds"
-
 
     def find_possible_moves(self, piece):
         rows, cols = (8, 8)
@@ -65,7 +73,7 @@ class Board:
             # Need to add case for en passant
             pawnTakeLeftCoords = (piece.coordinates[0]-1, piece.coordinates[1]+yIncrement)
             if (self.find_piece_by_coordinate(pawnTakeLeftCoords) is not None and
-            self.find_piece_by_coordinate(pawnTakeLeftCoords) != "Out of bounds"):
+                    self.find_piece_by_coordinate(pawnTakeLeftCoords) != "Out of bounds"):
                 possibleMoveArray[pawnTakeLeftCoords[0]][pawnTakeLeftCoords[1]] = True
 
             pawnTakeRightCoords = (piece.coordinates[0] + 1, piece.coordinates[1] + yIncrement)
@@ -75,7 +83,7 @@ class Board:
 
             pawnAdvanceOneCoords = (piece.coordinates[0], piece.coordinates[1] + yIncrement)
             if (self.find_piece_by_coordinate(pawnAdvanceOneCoords) is None and
-            self.find_piece_by_coordinate(pawnAdvanceOneCoords) != "Out of bounds"):
+                    self.find_piece_by_coordinate(pawnAdvanceOneCoords) != "Out of bounds"):
                 possibleMoveArray[pawnAdvanceOneCoords[0]][pawnAdvanceOneCoords[1]] = True
 
             pawnAdvanceTwoCoords = (piece.coordinates[0], piece.coordinates[1] + (2*yIncrement))
