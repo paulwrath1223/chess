@@ -1,102 +1,12 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+"""
+ Main file
+"""
+
+# imports
+from board_class import Board
+
+# global variables
+_board: Board = Board()
 
 
 def code_notation_to_chess_notation(a):
@@ -112,3 +22,5 @@ def chess_notation_to_code_notation(a):
     b = (b1, b2)
     return b
 
+
+print(_board)
