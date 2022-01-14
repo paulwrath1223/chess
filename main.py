@@ -21,6 +21,11 @@ def chess_notation_to_code_notation(a):
 
 
 def user_input(prompt: str) -> []:
+    """
+    Loop which asks user for input until it provides valid input
+    :param prompt:
+    :return: returns valid input,
+    """
     while True:
         u_input: str = input(prompt).lower()
         if len(u_input) == 2:
@@ -32,7 +37,7 @@ def user_input(prompt: str) -> []:
                         return u_input
                 except:
                     pass
-        print("We couldn't read that, please try again.")
+        print("We couldn't read that, please try again. \n")
 
 
 def start():
@@ -43,11 +48,13 @@ def start():
         print(board)
         print("Turn " + str(board.current_move) + ". ")
         if board.turn_white:
+            on_turn_color =  "White" if board.turn_white else "Black"
             piece_to_be_moved = user_input(
-                "Enter the coordinates of the piece you would like to move: (in form \"a1\") : ")
+                f"{on_turn_color} (in form \"a1\") : ")
             coord_piece_to_be_moved = chess_notation_to_code_notation((piece_to_be_moved[0], piece_to_be_moved[1]))
-            print(coord_piece_to_be_moved)
-
+            piece = board.find_piece_by_coordinate(coord_piece_to_be_moved)
+            for coord in board.find_possible_moves(piece):
+                print(coord)
 
 
 start()

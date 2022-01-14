@@ -59,43 +59,64 @@ class Board:
         board_string += "    a|b|c|d|e|f|g|h"
         return board_string
 
-    def find_piece_by_coordinate(self, coordinate: tuple):
+    def find_piece_by_coordinate(self, coordinate: ()):
         """Finds if coordinate is occupied or if there is a piece
         :param coordinate: (x, y)
-        :return: class Piece
+        :return: class Piece if occupied or None if not
         """
         for player in self.players:
             for piece in player.pieces:
                 if piece.get_pos() == coordinate:
                     return piece
-    def within_grid(self, coords):
-        if()
 
-    def find_possible_moves(self, piece):
-        possible_move_array = []
+    def within_grid(self, coords: ()) -> bool:
+        if 0 <= coords[0] <= 8 and 0 <= coords[1] <= 8:
+            return True
+
+    def find_possible_moves(self, piece: Piece):
         if piece.figure_kind == "P":
-            if piece.white:
-                y_increment = 1
-            else:
-                y_increment = -1
-            # TODO: Need to add case for en passant
-            pawn_take_left_coords = (piece.coordinates[0] - 1, piece.coordinates[1] + y_increment)
-            if (self.find_piece_by_coordinate(pawn_take_left_coords) is not None and
-                    pawn_take_left_coords[0]<8):
-                possible_move_array.append(pawn_take_left_coords)
+            return self.pawn_possible_moves(piece)
+        return []
 
-            pawn_take_right_coords = (piece.coordinates[0] + 1, piece.coordinates[1] + y_increment)
-            if (self.find_piece_by_coordinate(pawn_take_right_coords) is not None and
-                    self.find_piece_by_coordinate(pawn_take_right_coords) != "Out of bounds"):
-                possible_move_array.append(pawn_take_right_coords)
+    def pawn_possible_moves(self, piece: Piece):
+        possible_move_array = []
+        y_increment = 1 if piece.white else -1
 
-            pawn_advance_one_coords = (piece.coordinates[0], piece.coordinates[1] + y_increment)
-            if (self.find_piece_by_coordinate(pawn_advance_one_coords) is None and
-                    self.find_piece_by_coordinate(pawn_advance_one_coords) != "Out of bounds"):
-                possible_move_array.append(pawn_advance_one_coords)
+        # TODO: Need to add case for en passant
+        # TODO: check if by moving King gets in check
+        self.pawn_take_check(possible_move_array, (piece.coordinates[0] - 1, piece.coordinates[1] + y_increment))
+        self.pawn_take_check(possible_move_array, (piece.coordinates[0] + 1, piece.coordinates[1] + y_increment))
+        if not piece.moved and self.pawn_move_check(possible_move_array, (piece.coordinates[0], piece.coordinates[1] + y_increment)):
+            self.pawn_move_check(possible_move_array, (piece.coordinates[0], piece.coordinates[1] + 2 * y_increment))
 
-            pawn_advance_two_coords = (piece.coordinates[0], piece.coordinates[1] + (2 * y_increment))
-            if (self.find_piece_by_coordinate(pawn_advance_two_coords) is None and
-                    self.find_piece_by_coordinate(pawn_advance_one_coords) is None and not piece.moved):
-                possible_move_array.append(pawn_advance_two_coords)
-        return possible_move_array
+
+    def pawn_take_check(self, possible_move_array: [], coords: []) -> None:
+        if self.within_grid(coords):
+            piece = self.find_piece_by_coordinate(coords)
+            if type(piece) is Piece and piece.get_color() is not self.turn_white:
+                possible_move_array.append(coords)
+
+    def pawn_move_check(self, possible_move_array: [], coords: []) -> bool:
+        if self.within_grid(coords) and self.find_piece_by_coordinate(coords) is None:
+            possible_move_array.append(coords)
+            return True
+
+        # if (self.find_piece_by_coordinate(pawn_take_left_coords) is None and
+        #         pawn_take_left_coords[0]<8):
+        #     possible_move_array.append(pawn_take_left_coords)
+        #
+        # pawn_take_right_coords = (piece.coordinates[0] + 1, piece.coordinates[1] + y_increment)
+        # if (self.find_piece_by_coordinate(pawn_take_right_coords) is not None and
+        #         self.find_piece_by_coordinate(pawn_take_right_coords) != "Out of bounds"):
+        #     possible_move_array.append(pawn_take_right_coords)
+        #
+        # pawn_advance_one_coords = (piece.coordinates[0], piece.coordinates[1] + y_increment)
+        # if (self.find_piece_by_coordinate(pawn_advance_one_coords) is None and
+        #         self.find_piece_by_coordinate(pawn_advance_one_coords) != "Out of bounds"):
+        #     possible_move_array.append(pawn_advance_one_coords)
+        #
+        # pawn_advance_two_coords = (piece.coordinates[0], piece.coordinates[1] + (2 * y_increment))
+        # if (self.find_piece_by_coordinate(pawn_advance_two_coords) is None and
+        #         self.find_piece_by_coordinate(pawn_advance_one_coords) is None and not piece.moved):
+        #     possible_move_array.append(pawn_advance_two_coords)
+        # return possible_move_array
