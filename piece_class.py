@@ -14,7 +14,7 @@ class Piece:
         self.value = value  # value of the figure kind, pawn is 1, rook is 5...
 
     def __repr__(self):
-        return f"({self.figure_kind}, {self.coordinates}, {self.white}, {self.value})"
+        return f"({self.figure_kind}, {self.coordinates}, {self.white})"
 
     def set_pos(self, coordinates):
         self.coordinates = coordinates
