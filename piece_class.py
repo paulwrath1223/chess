@@ -10,8 +10,8 @@ class Piece:
         self.figure_kind = figure_kind
         self.coordinates = coordinates
         self.white = white
-        self.moved = False #
-        self.value = value # value of the figure kind, pawn is 1, rook is 5...
+        self.moved = False  # has this piece moved before
+        self.value = value  # value of the figure kind, pawn is 1, rook is 5...
 
     def __repr__(self):
         return f"({self.figure_kind}, {self.coordinates}, {self.white}, {self.value})"
