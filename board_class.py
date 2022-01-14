@@ -5,7 +5,6 @@ Board class
 import board_class
 from piece_class import Piece
 from player_class import Player
-from colorama import Fore, Back, Style
 
 # console colors
 W = '\033[0m'  # white (normal)
@@ -24,69 +23,99 @@ class Board:
         self.players = []
         self.players.append(Player(True))
         self.players.append(Player(False))
-        print(self.players)
         self.turn_white = True
+        self.game_over = False  # checkmate has occurred?
+        self.current_move = 1
 
-    def print_board(self, highlight=None):
-        if highlight is None:
-            rows, cols = (8, 8)
-            highlight = [[False] * cols] * rows
+    def __repr__(self):
         board_string = ""
         for y in range(7, -1, -1):
             board_string += (str(y + 1) + " | ")
             for x in range(8):
-                piece = self.find_piece_by_coordinate([x, y])
+                piece = self.find_piece_by_coordinate((x, y))
                 # print(f"{x},{y}: {piece}")
-                if piece is not None:
-                    if highlight[x][y]:
-                        board_string += R if piece.white else B
-                        board_string += piece.figure_kind + " " + W
+                if type(piece) is Piece:
+
+                    if (x + y) % 2 == 0:
+                        checkered = "█"
                     else:
-                        board_string += P if piece.white else G
-                        board_string += piece.figure_kind + " " + W
+                        checkered = " "
+
+                    board_string += R if piece.white else B
+                    board_string += piece.figure_kind + W + checkered
                 else:
-                    board_string += ". "
+                    # board_string += ". "
+
+                    if (x + y) % 2 == 0:
+                        board_string += " █"
+                    else:
+                        board_string += "  "
+
             board_string += "\n"
         board_string += "    a|b|c|d|e|f|g|h"
         return board_string
 
-    def find_piece_by_coordinate(self, coordinate) -> Piece:
+    def print_board(self):
+        # TODO: highlight possible moves
+        board_string = ""
+        for y in range(7, -1, -1):
+            board_string += (str(y + 1) + " | ")
+            for x in range(8):
+                piece = self.find_piece_by_coordinate((x, y))
+                # print(f"{x},{y}: {piece}")
+                if type(piece) is Piece:
+                    board_string += P if piece.white else G
+                    board_string += piece.figure_kind + " " + W
+                else:
+                    if x + y % 2 == 0:
+                        board_string += "\219\219"
+                    else:
+                        board_string += "  "
+            board_string += "\n"
+        board_string += "    a|b|c|d|e|f|g|h"
+        return board_string
+
+    def find_piece_by_coordinate(self, coordinate: ()):
         """Finds if coordinate is occupied or if there is a piece
         :param coordinate: (x, y)
-        :return: class Piece
+        :return: class Piece if occupied or None if not
         """
-        print("call function \"find_piece_by_coordinate\" with coord of " + str(coordinate))
         for player in self.players:
             for piece in player.pieces:
                 if piece.get_pos() == coordinate:
-                    print("found piece")
                     return piece
 
-    def find_possible_moves(self, piece):
-        rows, cols = (8, 8)
-        possibleMoveArray = [[False] * cols] * rows
+    def within_grid(self, coords: ()) -> bool:
+        return 0 <= coords[0] <= 8 and 0 <= coords[1] <= 8
+
+    def find_possible_moves(self, piece: Piece):
         if piece.figure_kind == "P":
-            if piece.white:
-                yIncrement = 1
-            else:
-                yIncrement = -1
-            # Need to add case for en passant
-            pawnTakeLeftCoords = (piece.coordinates[0]-1, piece.coordinates[1]+yIncrement)
-            if (self.find_piece_by_coordinate(pawnTakeLeftCoords) is not None and
-                    self.find_piece_by_coordinate(pawnTakeLeftCoords) != "Out of bounds"):
-                possibleMoveArray[pawnTakeLeftCoords[0]][pawnTakeLeftCoords[1]] = True
+            return self.pawn_possible_moves(piece)
+        return []
 
-            pawnTakeRightCoords = (piece.coordinates[0] + 1, piece.coordinates[1] + yIncrement)
-            if (self.find_piece_by_coordinate(pawnTakeRightCoords) is not None and
-                    self.find_piece_by_coordinate(pawnTakeRightCoords) != "Out of bounds"):
-                possibleMoveArray[pawnTakeRightCoords[0]][pawnTakeRightCoords[1]] = True
+    def pawn_possible_moves(self, piece: Piece):
+        possible_move_array = []
+        y_increment = 1 if piece.white else -1
 
-            pawnAdvanceOneCoords = (piece.coordinates[0], piece.coordinates[1] + yIncrement)
-            if (self.find_piece_by_coordinate(pawnAdvanceOneCoords) is None and
-                    self.find_piece_by_coordinate(pawnAdvanceOneCoords) != "Out of bounds"):
-                possibleMoveArray[pawnAdvanceOneCoords[0]][pawnAdvanceOneCoords[1]] = True
+        """TODO:
+        - need to add case for en passant
+        - check if by moving King gets in check
+        - 
+        """
+        self.pawn_take_check(possible_move_array, (piece.coordinates[0] - 1, piece.coordinates[1] + y_increment))
+        self.pawn_take_check(possible_move_array, (piece.coordinates[0] + 1, piece.coordinates[1] + y_increment))
+        if self.pawn_move_check(possible_move_array,
+                                (piece.coordinates[0], piece.coordinates[1] + y_increment)) and not piece.moved:
+            self.pawn_move_check(possible_move_array, (piece.coordinates[0], piece.coordinates[1] + 2 * y_increment))
+        return possible_move_array
 
-            pawnAdvanceTwoCoords = (piece.coordinates[0], piece.coordinates[1] + (2*yIncrement))
-            if (self.find_piece_by_coordinate(pawnAdvanceTwoCoords) is None and
-                    self.find_piece_by_coordinate(pawnAdvanceOneCoords) is None and not piece.moved):
-                possibleMoveArray[pawnAdvanceTwoCoords[0]][pawnAdvanceTwoCoords[1]] = True
+    def pawn_take_check(self, possible_move_array: [], coords: []) -> None:
+        if self.within_grid(coords):
+            piece = self.find_piece_by_coordinate(coords)
+            if type(piece) is Piece and piece.get_color() is not self.turn_white: # I cannot read what the fuck this line means
+                possible_move_array.append(coords)
+
+    def pawn_move_check(self, possible_move_array: [], coords: []) -> bool:
+        if self.within_grid(coords) and self.find_piece_by_coordinate(coords) is None:
+            possible_move_array.append(coords)
+            return True
