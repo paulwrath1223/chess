@@ -16,7 +16,6 @@ class Piece:
     def __repr__(self):
         return f"({self.figure_kind}, {self.coordinates}, {self.white}, {self.value})"
 
-    # TODO: is setter and getter necessary? yes.
     def set_pos(self, coordinates):
         self.coordinates = coordinates
         self.moved = True

@@ -35,7 +35,7 @@ class Board:
                 piece = self.find_piece_by_coordinate((x, y))
                 # print(f"{x},{y}: {piece}")
                 if type(piece) is Piece:
-                    board_string += P if piece.white else G
+                    board_string += R if piece.white else B
                     board_string += piece.figure_kind + " " + W
                 else:
                     board_string += ". "
@@ -44,6 +44,7 @@ class Board:
         return board_string
 
     def print_board(self):
+        # TODO: highlight possible moves
         board_string = ""
         for y in range(7, -1, -1):
             board_string += (str(y + 1) + " | ")
@@ -82,13 +83,16 @@ class Board:
         possible_move_array = []
         y_increment = 1 if piece.white else -1
 
-        # TODO: Need to add case for en passant
-        # TODO: check if by moving King gets in check
+        """TODO:
+        - need to add case for en passant
+        - check if by moving King gets in check
+        - 
+        """
         self.pawn_take_check(possible_move_array, (piece.coordinates[0] - 1, piece.coordinates[1] + y_increment))
         self.pawn_take_check(possible_move_array, (piece.coordinates[0] + 1, piece.coordinates[1] + y_increment))
-        if not piece.moved and self.pawn_move_check(possible_move_array, (piece.coordinates[0], piece.coordinates[1] + y_increment)):
+        if self.pawn_move_check(possible_move_array, (piece.coordinates[0], piece.coordinates[1] + y_increment)) and not piece.moved:
             self.pawn_move_check(possible_move_array, (piece.coordinates[0], piece.coordinates[1] + 2 * y_increment))
-
+        return possible_move_array
 
     def pawn_take_check(self, possible_move_array: [], coords: []) -> None:
         if self.within_grid(coords):
@@ -101,22 +105,3 @@ class Board:
             possible_move_array.append(coords)
             return True
 
-        # if (self.find_piece_by_coordinate(pawn_take_left_coords) is None and
-        #         pawn_take_left_coords[0]<8):
-        #     possible_move_array.append(pawn_take_left_coords)
-        #
-        # pawn_take_right_coords = (piece.coordinates[0] + 1, piece.coordinates[1] + y_increment)
-        # if (self.find_piece_by_coordinate(pawn_take_right_coords) is not None and
-        #         self.find_piece_by_coordinate(pawn_take_right_coords) != "Out of bounds"):
-        #     possible_move_array.append(pawn_take_right_coords)
-        #
-        # pawn_advance_one_coords = (piece.coordinates[0], piece.coordinates[1] + y_increment)
-        # if (self.find_piece_by_coordinate(pawn_advance_one_coords) is None and
-        #         self.find_piece_by_coordinate(pawn_advance_one_coords) != "Out of bounds"):
-        #     possible_move_array.append(pawn_advance_one_coords)
-        #
-        # pawn_advance_two_coords = (piece.coordinates[0], piece.coordinates[1] + (2 * y_increment))
-        # if (self.find_piece_by_coordinate(pawn_advance_two_coords) is None and
-        #         self.find_piece_by_coordinate(pawn_advance_one_coords) is None and not piece.moved):
-        #     possible_move_array.append(pawn_advance_two_coords)
-        # return possible_move_array
