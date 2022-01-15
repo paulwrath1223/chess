@@ -11,7 +11,7 @@ def code_notation_to_chess_notation(a):
     b1 = a[1] + 1
     b2 = chr(a[0] + 97)
     # b = (b2, b1)
-    b = str(b1) + str(b2)
+    b = str(b2) + str(b1)
     return b
 
 
@@ -68,10 +68,11 @@ def select_move(maximum):
 
 def move_piece(board):
     on_turn_color = "White" if board.turn_white else "Black"
-    piece = None
-    while piece is None:
-        piece = user_input(board, f"{on_turn_color} (in form \"a1\") : ")
+    piece = user_input(board, f"{on_turn_color} (in form \"a1\") : ")
+    while type(piece) is not Piece:
         print("there is no piece at the given coordinates, please try again.")
+        piece = user_input(board, f"{on_turn_color} (in form \"a1\") : ")
+        # todo check if the piece is of current player
 
     possible_moves = board.find_possible_moves(piece)
     for i, coord in enumerate(possible_moves):

@@ -88,7 +88,7 @@ class Board:
                     return piece
 
     def within_grid(self, coords: ()) -> bool:
-        return 0 <= coords[0] <= 8 and 0 <= coords[1] <= 8
+        return 0 <= coords[0] <= 7 and 0 <= coords[1] <= 7
 
     def find_possible_moves(self, piece: Piece) -> []:
         print(piece)
@@ -97,12 +97,20 @@ class Board:
             self.pawn_possible_moves(piece, possible_move_array)
         elif piece.figure_kind == "N":
             self.knight_possible_moves(piece, possible_move_array)
+        elif piece.figure_kind == "B":
+            self.bishop_possible_moves(piece, possible_move_array)
+        elif piece.figure_kind == "R":
+            self.rook_possible_moves(piece, possible_move_array)
         return possible_move_array
 
-    def figure_take_or_move_check(self, possible_move_array: [], coords: []) -> None:
+    def figure_take_or_move_check(self, possible_move_array: [], coords: []) -> bool:
         if self.within_grid(coords):
             piece_to_take = self.find_piece_by_coordinate(coords)
-            if piece_to_take is None or piece_to_take.get_color is self.turn_white:
+            if piece_to_take is None:
+                possible_move_array.append(coords)
+                return True
+            elif piece_to_take.get_color == self.turn_white:
+                print(f"Piece to take: {piece_to_take}, coords: {coords}")
                 possible_move_array.append(coords)
 
     def pawn_possible_moves(self, piece: Piece, possible_move_array) -> None:
@@ -136,4 +144,25 @@ class Board:
             for i in (-1, 1):
                 y = (3 - abs(x))*i
                 self.figure_take_or_move_check(possible_move_array, (piece.coordinates[0] + x, piece.coordinates[1]+y))
+
+    def bishop_possible_moves(self, piece: Piece, possible_move_array: []) -> None:
+        for x in (-1, 1):
+            for y in (-1, 1):
+                i = 1
+                while self.figure_take_or_move_check(possible_move_array, (piece.coordinates[0] + i*x, piece.coordinates[1]+i*y)):
+                    i += 1
+
+    def rook_possible_moves(self, piece: Piece, possible_move_array: []) -> None:
+        # todo: last tile of rook movement is wrong, why?
+        for x in (-1, 1):
+            i = 1
+            while self.figure_take_or_move_check(possible_move_array,
+                                                 (piece.coordinates[0] + i*x, piece.coordinates[1])):
+                i += 1
+        for y in (-1, 1):
+            i = 1
+            while self.figure_take_or_move_check(possible_move_array,
+                                                 (piece.coordinates[0], piece.coordinates[1] + i * y)):
+                i += 1
+
 
