@@ -67,11 +67,10 @@ def select_move(maximum):
 
 
 def move_piece(board):
-    on_turn_color = "White" if board.turn_white else "Black"
-    piece = user_input(board, f"{on_turn_color} (in form \"a1\") : ")
+    piece = user_input(board, f"{board.get_str_color()} (in form \"a1\") : ")
     while type(piece) is not Piece:
         print("there is no piece at the given coordinates, please try again.")
-        piece = user_input(board, f"{on_turn_color} (in form \"a1\") : ")
+        piece = user_input(board, f"{board.get_str_color()} (in form \"a1\") : ")
         # todo check if the piece is of current player
 
     possible_moves = board.find_possible_moves(piece)

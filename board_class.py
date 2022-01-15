@@ -57,6 +57,9 @@ class Board:
     def toggle_player(self):
         self.turn_white = not self.turn_white
 
+    def get_str_color(self):
+        return "white" if self.turn_white else "black"
+
     def print_board(self):
         # TODO: highlight possible moves
         board_string = ""
@@ -111,8 +114,8 @@ class Board:
             if piece_to_take is None:
                 possible_move_array.append(coords)
                 return True
-            elif piece_to_take.get_color == self.turn_white:
-                print(f"Piece to take: {piece_to_take}, coords: {coords}")
+            elif piece_to_take.white is not self.turn_white:
+                print(f"Piece to take: {piece_to_take}, coords: {coords}, turn: {self.get_str_color()}")
                 possible_move_array.append(coords)
 
     def pawn_possible_moves(self, piece: Piece, possible_move_array) -> None:
@@ -138,7 +141,7 @@ class Board:
     def pawn_take_check(self, possible_move_array: [], coords: []) -> None:
         if self.within_grid(coords):
             piece = self.find_piece_by_coordinate(coords)
-            if type(piece) is Piece and piece.get_color() is not self.turn_white: # I cannot read what the fuck this line means
+            if type(piece) is Piece and piece.white is not self.turn_white: # I cannot read what the fuck this line means
                 possible_move_array.append(coords)
 
     def knight_possible_moves(self, piece:Piece, possible_move_array: []) -> None:
