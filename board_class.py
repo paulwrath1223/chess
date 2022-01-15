@@ -101,6 +101,8 @@ class Board:
             self.bishop_possible_moves(piece, possible_move_array)
         elif piece.figure_kind == "R":
             self.rook_possible_moves(piece, possible_move_array)
+        elif piece.figure_kind == "Q":
+            self.queen_possible_moves(piece, possible_move_array)
         return possible_move_array
 
     def figure_take_or_move_check(self, possible_move_array: [], coords: []) -> bool:
@@ -164,5 +166,9 @@ class Board:
             while self.figure_take_or_move_check(possible_move_array,
                                                  (piece.coordinates[0], piece.coordinates[1] + i * y)):
                 i += 1
+
+    def queen_possible_moves(self, piece: Piece, possible_move_array: []) -> None:
+        self.bishop_possible_moves(piece, possible_move_array)
+        self.rook_possible_moves(piece, possible_move_array)
 
 
