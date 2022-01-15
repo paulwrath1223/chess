@@ -57,7 +57,12 @@ class Board:
     def get_str_color(self):
         return "white" if self.turn_white else "black"
 
-    def print_board(self, possible_moves=[]):
+    def print_board(self, possible_moves=[]) -> str:
+        """
+        Prints board while displaying possible moves
+        :param possible_moves:
+        :return: str board to print
+        """
         if possible_moves is None:
             possible_moves = []
         board_string = ""
@@ -90,7 +95,7 @@ class Board:
         return board_string
 
     def find_piece_by_coordinate(self, coordinate: ()):
-        """Finds if coordinate is occupied or if there is a piece
+        """Finds if coordinate is occupied or if there is a piece and returns it.
         :param coordinate: (x, y)
         :return: class Piece if occupied or None if not
         """
@@ -102,11 +107,24 @@ class Board:
     def within_grid(self, coords: ()) -> bool:
         return 0 <= coords[0] <= 7 and 0 <= coords[1] <= 7
 
-    def find_possible_moves(self, piece: Piece) -> []:
+    def find_attacked_tiles(self):
+        all_possible_moves = []
+        i = 0 if self.turn_white else 1
+        for piece in self.players[i].pieces:
+            all_possible_moves += self.find_possible_moves(piece, True)
+        return list(set(all_possible_moves))  # removes duplicates
+
+    def find_possible_moves(self, piece: Piece, attack: bool = False) -> []:
+        """
+        Finds possible move of given piece
+        :param piece:
+        :param attack: specify, if you want only tile which are under attack
+        :return: [] of possible moves
+        """
         print(piece)
         possible_move_array = []
         if piece.figure_kind == "P":
-            self.pawn_possible_moves(piece, possible_move_array)
+            self.pawn_possible_moves(piece, possible_move_array, attack)
         elif piece.figure_kind == "N":
             self.knight_possible_moves(piece, possible_move_array)
         elif piece.figure_kind == "B":
@@ -120,6 +138,12 @@ class Board:
         return possible_move_array
 
     def figure_take_or_move_check(self, possible_move_array: [], coords: []) -> bool:
+        """
+        If piece can move to coords adds them in possible_move_array
+        :param possible_move_array:
+        :param coords: (x, y)
+        :return: bool if piece can continue in given direction
+        """
         if self.within_grid(coords):
             piece_to_take = self.find_piece_by_coordinate(coords)
             if piece_to_take is None:
@@ -129,30 +153,31 @@ class Board:
                 print(f"Piece to take: {piece_to_take}, coords: {coords}, turn: {self.get_str_color()}")
                 possible_move_array.append(coords)
 
-    def pawn_possible_moves(self, piece: Piece, possible_move_array) -> None:
+    def pawn_possible_moves(self, piece: Piece, possible_move_array, attack: bool) -> None:
         y_increment = 1 if piece.white else -1
 
-        """TODO:
-        - need to add case for en passant
-        - check if by moving King gets in check
-        - 
-        """
-        self.pawn_take_check(possible_move_array, (piece.coordinates[0] - 1, piece.coordinates[1] + y_increment))
-        self.pawn_take_check(possible_move_array, (piece.coordinates[0] + 1, piece.coordinates[1] + y_increment))
-        if self.pawn_move_check(possible_move_array,
-                                (piece.coordinates[0], piece.coordinates[1] + y_increment)) and not piece.moved:
-            self.pawn_move_check(possible_move_array, (piece.coordinates[0], piece.coordinates[1] + 2 * y_increment))
-            # return possible_move_array not neccesary
+        # TODO: en passant
+        self.pawn_take_check(possible_move_array, (piece.coordinates[0] - 1, piece.coordinates[1] + y_increment),
+                             attack)
+        self.pawn_take_check(possible_move_array, (piece.coordinates[0] + 1, piece.coordinates[1] + y_increment),
+                             attack)
+        if not attack:
+            if self.pawn_move_check(possible_move_array,
+                                    (piece.coordinates[0], piece.coordinates[1] + y_increment)) and not piece.moved:
+                self.pawn_move_check(possible_move_array,
+                                     (piece.coordinates[0], piece.coordinates[1] + 2 * y_increment))
 
     def pawn_move_check(self, possible_move_array: [], coords: []) -> bool:
         if self.within_grid(coords) and self.find_piece_by_coordinate(coords) is None:
             possible_move_array.append(coords)
             return True
 
-    def pawn_take_check(self, possible_move_array: [], coords: []) -> None:
+    def pawn_take_check(self, possible_move_array: [], coords: [], attack: bool = False) -> None:
         if self.within_grid(coords):
             piece = self.find_piece_by_coordinate(coords)
             if type(piece) is Piece and piece.white is not self.turn_white:  # I cannot read what the fuck this line means
+                possible_move_array.append(coords)
+            elif attack:
                 possible_move_array.append(coords)
 
     def knight_possible_moves(self, piece: Piece, possible_move_array: []) -> None:
@@ -192,4 +217,3 @@ class Board:
             for y in (-1, 0, 1):
                 self.figure_take_or_move_check(possible_move_array,
                                                (piece.coordinates[0] + x, piece.coordinates[1] + y))
-

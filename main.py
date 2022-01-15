@@ -35,6 +35,8 @@ def user_input(board: Board, prompt: str) -> []:
     """
     while True:
         inp = input(prompt).lower()
+        if inp == "/cheat":
+            print(board.print_board(board.find_attacked_tiles()))
         if check_if_user_input_coords_exists(inp):
             coords = chess_notation_to_code_notation(inp)
             return board.find_piece_by_coordinate(coords)
