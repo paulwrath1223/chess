@@ -74,6 +74,7 @@ def move_piece(board):
         # todo check if the piece is of current player
 
     possible_moves = board.find_possible_moves(piece)
+    print(board.print_board(possible_moves))
     for i, coord in enumerate(possible_moves):
         print(str(i + 1) + ": " + str(code_notation_to_chess_notation(coord)).replace("\'", ""))
     selected_move = select_move(len(possible_moves))
