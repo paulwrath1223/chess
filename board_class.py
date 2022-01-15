@@ -35,10 +35,21 @@ class Board:
                 piece = self.find_piece_by_coordinate((x, y))
                 # print(f"{x},{y}: {piece}")
                 if type(piece) is Piece:
+                    if (x + y) % 2 == 0:
+                        checkered = "█"
+                    else:
+                        checkered = " "
+
                     board_string += R if piece.white else B
-                    board_string += piece.figure_kind + " " + W
+                    board_string += piece.figure_kind + W + checkered
                 else:
-                    board_string += ". "
+                    # board_string += ". "
+
+                    if (x + y) % 2 == 0:
+                        board_string += " █"
+                    else:
+                        board_string += "  "
+
             board_string += "\n"
         board_string += "    a|b|c|d|e|f|g|h"
         return board_string
@@ -55,7 +66,10 @@ class Board:
                     board_string += P if piece.white else G
                     board_string += piece.figure_kind + " " + W
                 else:
-                    board_string += ". "
+                    if x + y % 2 == 0:
+                        board_string += "\219\219"
+                    else:
+                        board_string += "  "
             board_string += "\n"
         board_string += "    a|b|c|d|e|f|g|h"
         return board_string
@@ -71,8 +85,7 @@ class Board:
                     return piece
 
     def within_grid(self, coords: ()) -> bool:
-        if 0 <= coords[0] <= 8 and 0 <= coords[1] <= 8:
-            return True
+        return 0 <= coords[0] <= 8 and 0 <= coords[1] <= 8
 
     def find_possible_moves(self, piece: Piece):
         print(piece)
@@ -102,6 +115,7 @@ class Board:
         if self.pawn_move_check(possible_move_array,
                                 (piece.coordinates[0], piece.coordinates[1] + y_increment)) and not piece.moved:
             self.pawn_move_check(possible_move_array, (piece.coordinates[0], piece.coordinates[1] + 2 * y_increment))
+            return possible_move_array
 
     def pawn_move_check(self, possible_move_array: [], coords: []) -> bool:
         if self.within_grid(coords) and self.find_piece_by_coordinate(coords) is None:
@@ -111,7 +125,7 @@ class Board:
     def pawn_take_check(self, possible_move_array: [], coords: []) -> None:
         if self.within_grid(coords):
             piece = self.find_piece_by_coordinate(coords)
-            if type(piece) is Piece and piece.get_color() is not self.turn_white:
+            if type(piece) is Piece and piece.get_color() is not self.turn_white: # I cannot read what the fuck this line means
                 possible_move_array.append(coords)
 
     def knight_possible_moves(self, possible_move_array: []):
