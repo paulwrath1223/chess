@@ -54,6 +54,9 @@ class Board:
         board_string += "    a|b|c|d|e|f|g|h"
         return board_string
 
+    def toggle_player(self):
+        self.turn_white = not self.turn_white
+
     def print_board(self):
         # TODO: highlight possible moves
         board_string = ""
