@@ -9,7 +9,7 @@ from player_class import Player
 W = '\033[0m'  # white (normal)
 R = '\033[31m'  # red
 G = '\033[32m'  # green
-O = '\033[33m'  # orange
+ORANGE = '\033[33m'  # orange
 B = '\033[34m'  # blue
 P = '\033[35m'  # purple
 BOLD = '\033[1m'
@@ -95,7 +95,7 @@ class Board:
         return board_string
 
     def find_piece_by_coordinate(self, coordinate: ()):
-        """Finds if coordinate is occupied or if there is a piece and returns it.
+        """Finds if coordinate is occupied or if there is a piece and returns it
         :param coordinate: (x, y)
         :return: class Piece if occupied or None if not
         """
@@ -107,9 +107,9 @@ class Board:
     def within_grid(self, coords: ()) -> bool:
         return 0 <= coords[0] <= 7 and 0 <= coords[1] <= 7
 
-    def find_attacked_tiles(self):
+    def find_attacked_tiles(self, white):
         all_possible_moves = []
-        i = 0 if self.turn_white else 1
+        i = 0 if white else 1
         for piece in self.players[i].pieces:
             all_possible_moves += self.find_possible_moves(piece, True)
         return list(set(all_possible_moves))  # removes duplicates
@@ -126,20 +126,21 @@ class Board:
         if piece.figure_kind == "P":
             self.pawn_possible_moves(piece, possible_move_array, attack)
         elif piece.figure_kind == "N":
-            self.knight_possible_moves(piece, possible_move_array)
+            self.knight_possible_moves(piece, possible_move_array, attack)
         elif piece.figure_kind == "B":
-            self.bishop_possible_moves(piece, possible_move_array)
+            self.bishop_possible_moves(piece, possible_move_array, attack)
         elif piece.figure_kind == "R":
-            self.rook_possible_moves(piece, possible_move_array)
+            self.rook_possible_moves(piece, possible_move_array, attack)
         elif piece.figure_kind == "Q":
-            self.queen_possible_moves(piece, possible_move_array)
+            self.queen_possible_moves(piece, possible_move_array, attack)
         elif piece.figure_kind == "K":
-            self.king_possible_moves(piece, possible_move_array)
+            self.king_possible_moves(piece, possible_move_array, attack)
         return possible_move_array
 
-    def figure_take_or_move_check(self, possible_move_array: [], coords: []) -> bool:
+    def figure_take_or_move_check(self, piece, possible_move_array: [], coords: [], attack: bool) -> bool:
         """
         If piece can move to coords adds them in possible_move_array
+        :param piece:
         :param possible_move_array:
         :param coords: (x, y)
         :return: bool if piece can continue in given direction
@@ -147,9 +148,13 @@ class Board:
         if self.within_grid(coords):
             piece_to_take = self.find_piece_by_coordinate(coords)
             if piece_to_take is None:
-                possible_move_array.append(coords)
-                return True
-            elif piece_to_take.white is not self.turn_white:
+                if attack:
+                    possible_move_array.append(coords)
+                    return True
+                elif not self.will_king_be_in_check(piece, coords):
+                    possible_move_array.append(coords)
+                    return True
+            elif piece_to_take.white is not piece.white:
                 print(f"Piece to take: {piece_to_take}, coords: {coords}, turn: {self.get_str_color()}")
                 possible_move_array.append(coords)
 
@@ -157,63 +162,74 @@ class Board:
         y_increment = 1 if piece.white else -1
 
         # TODO: en passant
-        self.pawn_take_check(possible_move_array, (piece.coordinates[0] - 1, piece.coordinates[1] + y_increment),
+        self.pawn_take_check(piece, possible_move_array, (piece.coordinates[0] - 1, piece.coordinates[1] + y_increment),
                              attack)
-        self.pawn_take_check(possible_move_array, (piece.coordinates[0] + 1, piece.coordinates[1] + y_increment),
+        self.pawn_take_check(piece, possible_move_array, (piece.coordinates[0] + 1, piece.coordinates[1] + y_increment),
                              attack)
         if not attack:
-            if self.pawn_move_check(possible_move_array,
+            if self.pawn_move_check(piece, possible_move_array,
                                     (piece.coordinates[0], piece.coordinates[1] + y_increment)) and not piece.moved:
-                self.pawn_move_check(possible_move_array,
+                self.pawn_move_check(piece, possible_move_array,
                                      (piece.coordinates[0], piece.coordinates[1] + 2 * y_increment))
 
-    def pawn_move_check(self, possible_move_array: [], coords: []) -> bool:
+    def pawn_move_check(self, piece: Piece, possible_move_array: [], coords: []) -> bool:
         if self.within_grid(coords) and self.find_piece_by_coordinate(coords) is None:
-            possible_move_array.append(coords)
-            return True
-
-    def pawn_take_check(self, possible_move_array: [], coords: [], attack: bool = False) -> None:
-        if self.within_grid(coords):
-            piece = self.find_piece_by_coordinate(coords)
-            if type(piece) is Piece and piece.white is not self.turn_white:  # I cannot read what the fuck this line means
+            if not self.will_king_be_in_check(piece, coords):
                 possible_move_array.append(coords)
+                return True
+
+    def pawn_take_check(self, piece: Piece, possible_move_array: [], coords: [], attack: bool = False) -> None:
+        if self.within_grid(coords):
+            piece_to_take = self.find_piece_by_coordinate(coords)
+            if type(piece_to_take) is Piece and piece_to_take.white is not piece.white:
+                if not self.will_king_be_in_check(piece, coords):
+                    possible_move_array.append(coords)
             elif attack:
                 possible_move_array.append(coords)
 
-    def knight_possible_moves(self, piece: Piece, possible_move_array: []) -> None:
+    def knight_possible_moves(self, piece: Piece, possible_move_array: [], attack: bool) -> None:
         for x in (-2, -1, 1, 2):
             for i in (-1, 1):
                 y = (3 - abs(x)) * i
-                self.figure_take_or_move_check(possible_move_array,
-                                               (piece.coordinates[0] + x, piece.coordinates[1] + y))
+                self.figure_take_or_move_check(piece, possible_move_array,
+                                               (piece.coordinates[0] + x, piece.coordinates[1] + y), attack)
 
-    def bishop_possible_moves(self, piece: Piece, possible_move_array: []) -> None:
+    def bishop_possible_moves(self, piece: Piece, possible_move_array: [], attack: bool) -> None:
         for x in (-1, 1):
             for y in (-1, 1):
                 i = 1
-                while self.figure_take_or_move_check(possible_move_array,
-                                                     (piece.coordinates[0] + i * x, piece.coordinates[1] + i * y)):
+                while self.figure_take_or_move_check(piece, possible_move_array,
+                                                     (piece.coordinates[0] + i * x, piece.coordinates[1] + i * y),
+                                                     attack):
                     i += 1
 
-    def rook_possible_moves(self, piece: Piece, possible_move_array: []) -> None:
+    def rook_possible_moves(self, piece: Piece, possible_move_array: [], attack: bool) -> None:
         # todo: last tile of rook movement is wrong, why?
         for x in (-1, 1):
             i = 1
-            while self.figure_take_or_move_check(possible_move_array,
-                                                 (piece.coordinates[0] + i * x, piece.coordinates[1])):
+            while self.figure_take_or_move_check(piece, possible_move_array,
+                                                 (piece.coordinates[0] + i * x, piece.coordinates[1]), attack):
                 i += 1
         for y in (-1, 1):
             i = 1
-            while self.figure_take_or_move_check(possible_move_array,
-                                                 (piece.coordinates[0], piece.coordinates[1] + i * y)):
+            while self.figure_take_or_move_check(piece, possible_move_array,
+                                                 (piece.coordinates[0], piece.coordinates[1] + i * y), attack):
                 i += 1
 
-    def queen_possible_moves(self, piece: Piece, possible_move_array: []) -> None:
-        self.bishop_possible_moves(piece, possible_move_array)
-        self.rook_possible_moves(piece, possible_move_array)
+    def queen_possible_moves(self, piece: Piece, possible_move_array: [], attack) -> None:
+        self.bishop_possible_moves(piece, possible_move_array, attack)
+        self.rook_possible_moves(piece, possible_move_array, attack)
 
-    def king_possible_moves(self, piece: Piece, possible_move_array: []) -> None:
+    def king_possible_moves(self, piece: Piece, possible_move_array: [], attack) -> None:
         for x in (-1, 0, 1):
             for y in (-1, 0, 1):
-                self.figure_take_or_move_check(possible_move_array,
-                                               (piece.coordinates[0] + x, piece.coordinates[1] + y))
+                self.figure_take_or_move_check(piece, possible_move_array,
+                                               (piece.coordinates[0] + x, piece.coordinates[1] + y), attack)
+
+    def will_king_be_in_check(self, piece: Piece, coords_to_be_moved) -> bool:
+        old_coords = piece.coordinates
+        piece.coordinates = coords_to_be_moved
+        i = 0 if self.turn_white else 1
+        king_in_check = self.players[i].pieces[0].coordinates in self.find_attacked_tiles(not self.turn_white)
+        piece.coordinates = old_coords
+        return king_in_check

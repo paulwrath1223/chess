@@ -35,9 +35,9 @@ def user_input(board: Board, prompt: str) -> []:
     """
     while True:
         inp = input(prompt).lower()
-        if inp == "/cheat":
-            print(board.print_board(board.find_attacked_tiles()))
-        if check_if_user_input_coords_exists(inp):
+        if inp == "/attack":
+            print(board.print_board(board.find_attacked_tiles(board.turn_white)))
+        elif check_if_user_input_coords_exists(inp):
             coords = chess_notation_to_code_notation(inp)
             return board.find_piece_by_coordinate(coords)
         else:
@@ -75,6 +75,7 @@ def move_piece(board):
         piece = user_input(board, f"{board.get_str_color()} (in form \"a1\") : ")
         # todo check if the piece is of current player
 
+    print(f"Selected piece: {piece}")
     possible_moves = board.find_possible_moves(piece)
     print(board.print_board(possible_moves))
     for i, coord in enumerate(possible_moves):
