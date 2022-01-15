@@ -2,7 +2,6 @@
 Board class
 """
 # imports
-import board_class
 from piece_class import Piece
 from player_class import Player
 
@@ -116,6 +115,8 @@ class Board:
             self.rook_possible_moves(piece, possible_move_array)
         elif piece.figure_kind == "Q":
             self.queen_possible_moves(piece, possible_move_array)
+        elif piece.figure_kind == "K":
+            self.king_possible_moves(piece, possible_move_array)
         return possible_move_array
 
     def figure_take_or_move_check(self, possible_move_array: [], coords: []) -> bool:
@@ -185,3 +186,10 @@ class Board:
     def queen_possible_moves(self, piece: Piece, possible_move_array: []) -> None:
         self.bishop_possible_moves(piece, possible_move_array)
         self.rook_possible_moves(piece, possible_move_array)
+
+    def king_possible_moves(self, piece: Piece, possible_move_array: []) -> None:
+        for x in (-1, 0, 1):
+            for y in (-1, 0, 1):
+                self.figure_take_or_move_check(possible_move_array,
+                                               (piece.coordinates[0] + x, piece.coordinates[1] + y))
+
