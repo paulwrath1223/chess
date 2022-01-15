@@ -17,7 +17,7 @@ P = '\033[35m'  # purple
 
 class Board:
 
-    def __init__(self) -> None:
+    def __init__(self):
         """ Constructor
         """
         self.players = []
@@ -90,7 +90,7 @@ class Board:
     def within_grid(self, coords: ()) -> bool:
         return 0 <= coords[0] <= 8 and 0 <= coords[1] <= 8
 
-    def find_possible_moves(self, piece: Piece):
+    def find_possible_moves(self, piece: Piece) -> []:
         print(piece)
         possible_move_array = []
         if piece.figure_kind == "P":
@@ -131,7 +131,7 @@ class Board:
             if type(piece) is Piece and piece.get_color() is not self.turn_white: # I cannot read what the fuck this line means
                 possible_move_array.append(coords)
 
-    def knight_possible_moves(self, piece:Piece, possible_move_array: []):
+    def knight_possible_moves(self, piece:Piece, possible_move_array: []) -> None:
         for x in (-2, -1, 1, 2):
             for i in (-1, 1):
                 y = (3 - abs(x))*i
