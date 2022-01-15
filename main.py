@@ -10,7 +10,8 @@ from piece_class import Piece
 def code_notation_to_chess_notation(a):
     b1 = a[1] + 1
     b2 = chr(a[0] + 97)
-    b = (b2, b1)
+    # b = (b2, b1)
+    b = str(b1) + str(b2)
     return b
 
 
@@ -67,9 +68,7 @@ def select_move(maximum):
 
 def move_piece(board):
     on_turn_color = "White" if board.turn_white else "Black"
-    piece_to_be_moved = user_input(f"{on_turn_color} (in form \"a1\") : ")
-    coord_piece_to_be_moved = chess_notation_to_code_notation((piece_to_be_moved[0], piece_to_be_moved[1]))
-    piece = board.find_piece_by_coordinate(coord_piece_to_be_moved)
+    piece = None
     while piece is None:
         print("there is no piece at the given coordinates, please try again.")
         piece_to_be_moved = user_input(f"{on_turn_color} (in form \"a1\") : ")
