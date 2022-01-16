@@ -121,7 +121,7 @@ class Board:
         :param attack: specify, if you want only tile which are under attack
         :return: [] of possible moves
         """
-        print(piece)
+        #print(piece)
         possible_move_array = []
         if piece.figure_kind == "P":
             self.pawn_possible_moves(piece, possible_move_array, attack)
@@ -155,7 +155,7 @@ class Board:
                     possible_move_array.append(coords)
                     return True
             elif piece_to_take.white is not piece.white:
-                print(f"Piece to take: {piece_to_take}, coords: {coords}, turn: {self.get_str_color()}")
+                #print(f"Piece to take: {piece_to_take}, coords: {coords}, turn: {self.get_str_color()}")
                 possible_move_array.append(coords)
 
     def pawn_possible_moves(self, piece: Piece, possible_move_array, attack: bool) -> None:
@@ -204,7 +204,6 @@ class Board:
                     i += 1
 
     def rook_possible_moves(self, piece: Piece, possible_move_array: [], attack: bool) -> None:
-        # todo: last tile of rook movement is wrong, why?
         for x in (-1, 1):
             i = 1
             while self.figure_take_or_move_check(piece, possible_move_array,

@@ -1,7 +1,8 @@
 """
  Main file
 """
-# TODO: Delete pieces after they have been taken
+# TODO: check check not always working
+# TODO: Castling
 # imports
 from board_class import Board
 from piece_class import Piece
@@ -29,17 +30,16 @@ def user_input(board: Board, prompt: str) -> []:
     :param prompt: ask user question
     :return: returns valid input,
     """
-    """ TODO: 
-    - add more commands: help, deselect... return move, restart game, end game
-    - 
-    """
+    # TODO: add more commands: return move, restart game, end game
     while True:
         inp = input(prompt).lower()
         if inp == "/attack":
             print(board.print_board(board.find_attacked_tiles(board.turn_white)))
+        elif inp == "0":
+            return 0
         elif check_if_user_input_coords_exists(inp):
             coords = chess_notation_to_code_notation(inp)
-            return board.find_piece_by_coordinate(coords)
+            return coords
         else:
             print("We couldn't read that, please try again. \n")
 
@@ -69,24 +69,39 @@ def select_move(maximum):
 
 
 def move_piece(board):
-    piece = user_input(board, f"{board.get_str_color()} (in form \"a1\") : ")
-    while type(piece) is not Piece:
-        print("there is no piece at the given coordinates, please try again.")
-        piece = user_input(board, f"{board.get_str_color()} (in form \"a1\") : ")
-        # todo check if the piece is of current player
+    while True:
+        coords = user_input(board, f"{board.get_str_color()} (in form \"a1\") : ")
+        piece = board.find_piece_by_coordinate(coords)
+        if type(piece) is Piece:
+            if piece.white == board.turn_white:
+                break
+            else:
+                print("Please choose piece of your color.")
+        else:
+            print("There is no piece at the given coordinates. Please try again.")
 
-    print(f"Selected piece: {piece}")
     possible_moves = board.find_possible_moves(piece)
     print(board.print_board(possible_moves))
-    for i, coord in enumerate(possible_moves):
-        print(str(i + 1) + ": " + str(code_notation_to_chess_notation(coord)).replace("\'", ""))
-    selected_move = select_move(len(possible_moves))
-    if selected_move == 0:
-        print("select a new piece")
-        return move_piece(board)
-    else:
-        piece.set_pos(possible_moves[selected_move - 1])
-        board.toggle_player()
+    while True:
+        coords = user_input(board, f"Move {piece.figure_kind} at {code_notation_to_chess_notation(coords)} to "
+                                   f"(in form \"a1\", 0 to deselect) : ")
+        if coords == 0:
+            print("Piece deselected.\n")
+            return move_piece(board)
+        if coords in possible_moves:
+            take_piece(board, coords)
+            piece.set_pos(coords)
+            board.toggle_player()
+            return
+        else:
+            print("This move is not possible. Please try again.\n")
+
+
+def take_piece(board, coords) -> None:
+    piece_to_take = board.find_piece_by_coordinate(coords)
+    if type(piece_to_take) is Piece:
+        i = 1 if board.turn_white else 0
+        board.players[i].pieces.remove(piece_to_take)
 
 
 def start():
