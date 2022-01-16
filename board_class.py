@@ -86,7 +86,7 @@ class Board:
                     if possible_move:
                         board_string += checkered
                         board_string += R if self.turn_white else B
-                        board_string += "o" + W + checkered
+                        board_string += "." + W + checkered
                     else:
                         board_string += "███" if (x + y) % 2 == 0 else "   "
 

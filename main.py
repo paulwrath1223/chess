@@ -1,8 +1,14 @@
 """
  Main file
 """
-# TODO: check check not always working
+# TODO: pawn transform to queen
+# TODO: add coords to the top and right of the board
+# TODO: https://en.wikipedia.org/wiki/Chess_symbols_in_Unicode
+# TODO: game over condition
+# TODO: check check not always working - check for king if he moves in check
 # TODO: Castling
+# TODO: Game History
+# TODO: En Passant
 # imports
 from board_class import Board
 from piece_class import Piece
@@ -86,7 +92,7 @@ def move_piece(board):
         coords = user_input(board, f"Move {piece.figure_kind} at {code_notation_to_chess_notation(coords)} to "
                                    f"(in form \"a1\", 0 to deselect) : ")
         if coords == 0:
-            print("Piece deselected.\n")
+            print("Piece deselected4444444444444.\n")
             return move_piece(board)
         if coords in possible_moves:
             take_piece(board, coords)
