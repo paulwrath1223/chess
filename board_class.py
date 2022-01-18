@@ -29,6 +29,7 @@ class Board:
         self.turn_white = True
         self.game_over = False  # checkmate has occurred?
         self.current_move = 1
+        self.move_history = []
 
     def __repr__(self):
         board_string = ""
@@ -121,7 +122,7 @@ class Board:
         :param attack: specify, if you want only tile which are under attack
         :return: [] of possible moves
         """
-        #print(piece)
+        # print(piece)
         possible_move_array = []
         if piece.figure_kind == "P":
             self.pawn_possible_moves(piece, possible_move_array, attack)
@@ -140,6 +141,7 @@ class Board:
     def figure_take_or_move_check(self, piece, possible_move_array: [], coords: [], attack: bool) -> bool:
         """
         If piece can move to coords adds them in possible_move_array
+        :param attack:
         :param piece:
         :param possible_move_array:
         :param coords: (x, y)
@@ -155,7 +157,7 @@ class Board:
                     possible_move_array.append(coords)
                     return True
             elif piece_to_take.white is not piece.white:
-                #print(f"Piece to take: {piece_to_take}, coords: {coords}, turn: {self.get_str_color()}")
+                # print(f"Piece to take: {piece_to_take}, coords: {coords}, turn: {self.get_str_color()}")
                 possible_move_array.append(coords)
 
     def pawn_possible_moves(self, piece: Piece, possible_move_array, attack: bool) -> None:

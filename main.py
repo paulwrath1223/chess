@@ -7,7 +7,7 @@
 # TODO: game over condition
 # TODO: check check not always working - check for king if he moves in check
 # TODO: Castling
-# TODO: Game History
+# TODO: Game History  -https://www.cs.kent.ac.uk/people/staff/djb/pgn-extract/
 # TODO: En Passant
 # imports
 from board_class import Board
@@ -92,7 +92,7 @@ def move_piece(board):
         coords = user_input(board, f"Move {piece.figure_kind} at {code_notation_to_chess_notation(coords)} to "
                                    f"(in form \"a1\", 0 to deselect) : ")
         if coords == 0:
-            print("Piece deselected4444444444444.\n")
+            print("Piece deselected4444444444444.\n")  # is 44444444444444 on purpose
             return move_piece(board)
         if coords in possible_moves:
             take_piece(board, coords)
