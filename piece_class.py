@@ -14,7 +14,8 @@ class Piece:
         self.value = value  # value of the figure kind, pawn is 1, rook is 5...
 
     def __repr__(self):
-        return f"({self.figure_kind}, {self.coordinates}, {self.white}, {self.value})"
+        color = "white" if self.white else "black"
+        return f"({self.figure_kind}, {self.coordinates}, {color})"
 
     def set_pos(self, coordinates):
         self.coordinates = coordinates
@@ -22,11 +23,5 @@ class Piece:
 
     def get_pos(self):
         return self.coordinates
-
-    def get_color(self) -> bool:
-        """
-        :return: true if it is a white piece
-        """
-        return self.white
 
 
