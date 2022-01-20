@@ -112,7 +112,7 @@ def take_piece(board, coords) -> None:
 
 def start():
     board: Board = Board()  # not global, will be passed as a param to other functions
-    board.players[0].pieces[0].get_symbol()
+    print(board.print_board_2())
     # game loop
     while not board.game_over:
         print(board)
