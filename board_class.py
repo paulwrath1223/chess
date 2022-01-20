@@ -92,21 +92,21 @@ class Board:
                         board_string += "███" if (x + y) % 2 == 0 else "   "
 
             board_string += "\n"
-        board_string += "    a |b |c |d |e |f |g |h"
+        board_string += "    a | b | c | d | e | f | g | h"
         return board_string
 
     def print_board_2(self):
-        board_string = "    a   b   c   d   e   f   g   h\n"
-        board_string += "  ┌─―─┬─―─┬─―─┬─―─┬─―─┬─―─┬─―─┬─―─┐\n"
+        board_string = "      a    b    c    d    e    f    g    h\n"
+        board_string += "  ┌────┬────┬────┬────┬────┬────┬────┬────┐\n"
         for y in range(7, -1, -1):
             board_string += f"{y+1} "
             for x in range(8):
                 board_string += self.get_cell((x, y))
             if y > 0:
-                board_string += f"│ {y+1} \n  ├─―─┼─―─┼─―─┼─―─┼─―─┼─―─┼─―─┼─―─┤\n"
+                board_string += f"│ {y+1} \n  ├────┼────┼────┼────┼────┼────┼────┼────┤\n"
             else:
-                board_string += f"│ {y + 1} \n  └─―─┴─―─┴─―─┴─―─┴─―─┴─―─┴─―─┴─―─┘\n"
-        board_string += "    a   b   c   d   e   f   g   h\n"
+                board_string += f"│ {y + 1} \n  └────┴────┴────┴────┴────┴────┴────┴────┘\n"
+        board_string += "      a    b    c    d    e    f    g    h\n"
         return board_string
 
     def get_cell(self, coords):
@@ -114,9 +114,9 @@ class Board:
 
         if type(piece) is Piece:
             # add color
-            return f"│ {piece.get_symbol()} "
+            return f"│   {piece.get_symbol()}   "
         else:
-            return "│   "
+            return "│       "
 
     def find_piece_by_coordinate(self, coordinate: ()):
         """Finds if coordinate is occupied or if there is a piece and returns it
