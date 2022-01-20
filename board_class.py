@@ -131,6 +131,25 @@ class Board:
     def within_grid(self, coords: ()) -> bool:
         return 0 <= coords[0] <= 7 and 0 <= coords[1] <= 7
 
+    def an_game_to_an_move_list(self, an_game):
+        """
+        :param an_game: a string representing a chess game in algebraic notation (sample in readme)
+        :return: a 2d array containing every move in "AN" (algebraic notation) each turn has a list of 2 moves,
+        one for each player/team
+        """
+        game_data = an_game.split("###")[1]
+        first_layer_list = game_data.split(" W")
+        first_layer_list.pop(0)
+        list_out = []
+        for raw_move_pair in first_layer_list:
+            move_pair_list = raw_move_pair.split(" B", 1)
+            for i in range(len(move_pair_list)):
+                move_pair_list[i] = move_pair_list[i].split(".")[1]
+            list_out.append(move_pair_list)
+        list_out.pop(0)
+        return list_out
+
+
     def find_attacked_tiles(self, white):
         all_possible_moves = []
         i = 0 if white else 1
