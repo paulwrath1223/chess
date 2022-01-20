@@ -24,4 +24,20 @@ class Piece:
     def get_pos(self):
         return self.coordinates
 
+    def get_symbol(self):
+        pieces = ''.join(chr(9812 + x) for x in range(12))
+        start_index = 0 if self.white else 6
+        if self.figure_kind == "K":
+            return pieces[start_index]
+        if self.figure_kind == "Q":
+            return pieces[start_index + 1]
+        if self.figure_kind == "R":
+            return pieces[start_index + 2]
+        if self.figure_kind == "B":
+            return pieces[start_index + 3]
+        if self.figure_kind == "N":
+            return pieces[start_index + 4]
+        if self.figure_kind == "P":
+            return pieces[start_index + 5]
+
 

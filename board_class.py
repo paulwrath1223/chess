@@ -42,7 +42,7 @@ class Board:
                     checkered = "█" if (x + y) % 2 == 0 else " "
                     board_string += checkered
                     board_string += R if piece.white else B
-                    board_string += piece.figure_kind + W + checkered
+                    board_string += piece.get_symbol() + W + checkered
                 else:
                     # board_string += ". "
 
@@ -78,9 +78,9 @@ class Board:
                     board_string += checkered
                     board_string += R if piece.white else B
                     if possible_move:
-                        board_string += BOLD + UNDERLINE + piece.figure_kind + END_UNDERLINE + END_BOLD
+                        board_string += BOLD + UNDERLINE + piece.get_symbol() + END_UNDERLINE + END_BOLD
                     else:
-                        board_string += piece.figure_kind
+                        board_string += piece.get_symbol()
                     board_string += W + checkered
                 else:
                     # board_string += ". "
