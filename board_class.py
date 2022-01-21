@@ -21,12 +21,11 @@ END_UNDERLINE = "\033[0m"
 class Board:
 
     def __init__(self):
-        """ Constructor
-        """
         self.players = []
         self.players.append(Player(True))
         self.players.append(Player(False))
         self.turn_white = True
+        self.score = 0
         self.game_over = False  # checkmate has occurred?
         self.current_move = 1
         self.move_history = []
@@ -55,8 +54,12 @@ class Board:
     def toggle_player(self):
         self.turn_white = not self.turn_white
 
+    def increase_current_move(self):
+        if not self.turn_white:
+            self.current_move += 1
+
     def get_str_color(self):
-        return "White" if self.turn_white else "Black"
+        return self.color_text("White" if self.turn_white else "Black", self.turn_white)
 
     def print_board(self, possible_moves=[]) -> str:
         """
@@ -109,26 +112,24 @@ class Board:
         board_string += "      a    b    c    d    e    f    g    h\n"
         return board_string
 
-    def get_cell(self, coords: (), possible_moves: []):
+    def get_cell(self, coords: (), possible_moves: []) -> str:
         piece = self.find_piece_by_coordinate(coords)
-
-        colorful_symbol = "│   "
+        colorful_symbol = "│"+ 3*" "
 
         if type(piece) is Piece:
-            colorful_symbol += R if piece.white else B
             if coords in possible_moves:
-                colorful_symbol += UNDERLINE + piece.get_symbol(0) + END_UNDERLINE + W + "   "
+                colorful_symbol += UNDERLINE + self.color_text(piece.get_symbol(0), piece.white) + END_UNDERLINE + 3*" "
             else:
-                colorful_symbol += piece.get_symbol() + W + "   "
+                colorful_symbol += self.color_text(piece.get_symbol(), piece.white) + 3*" "
         else:
             if coords in possible_moves:
-                colorful_symbol += R if self.turn_white else B
-                colorful_symbol += "•" + W + "    "
+                colorful_symbol += self.color_text("•", self.turn_white) + 2*"  "
             else:
-                return "│       "
+                return "│ " + 6*" "
         return colorful_symbol
 
-    def color_text(self, text, color):
+    def color_text(self, text, white: bool):
+        color = R if white else B
         return color + text + W
 
     def find_piece_by_coordinate(self, coordinate: ()):
@@ -195,8 +196,8 @@ class Board:
     def figure_take_or_move_check(self, piece, possible_move_array: [], coords: [], attack: bool) -> bool:
         """
         If piece can move to coords adds them in possible_move_array
-        :param attack:
-        :param piece:
+        :param attack: true if you want to get all attacked tiles
+        :param piece: current Piece
         :param possible_move_array:
         :param coords: (x, y)
         :return: bool if piece can continue in given direction
@@ -212,12 +213,15 @@ class Board:
                     return True
             elif piece_to_take.white is not piece.white:
                 # print(f"Piece to take: {piece_to_take}, coords: {coords}, turn: {self.get_str_color()}")
+                #if not self.will_king_be_in_check(piece, coords):
+                if piece.figure_kind == "K" and not attack:
+                    if piece_to_take.coordinates in self.find_attacked_tiles(piece.white):
+                        return
                 possible_move_array.append(coords)
 
     def pawn_possible_moves(self, piece: Piece, possible_move_array, attack: bool) -> None:
         y_increment = 1 if piece.white else -1
 
-        # TODO: en passant
         self.pawn_take_check(piece, possible_move_array, (piece.coordinates[0] - 1, piece.coordinates[1] + y_increment),
                              attack)
         self.pawn_take_check(piece, possible_move_array, (piece.coordinates[0] + 1, piece.coordinates[1] + y_increment),

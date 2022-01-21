@@ -97,6 +97,8 @@ def move_piece(board):
         if coords in possible_moves:
             take_piece(board, coords)
             piece.set_pos(coords)
+            check_for_checkmate(board)
+            board.increase_current_move()
             board.toggle_player()
             return
         else:
@@ -109,6 +111,18 @@ def take_piece(board, coords) -> None:
         i = 1 if board.turn_white else 0
         board.players[i].pieces.remove(piece_to_take)
 
+
+# TODO: Not working, Vojta is working on it
+def check_for_checkmate(board: Board):
+    i = 1 if board.turn_white else 0
+    all_possible_moves = []
+    for piece in board.players[i].pieces:
+        all_possible_moves += board.find_possible_moves(piece)
+    if len(all_possible_moves) == 0:
+        if board.players[i].pieces[0].coordinates in board.find_attacked_tiles(board.turn_white):
+            print("Check Mate")
+        else:
+            print("Stale Mate")
 
 def start():
     board: Board = Board()  # not global, will be passed as a param to other functions
