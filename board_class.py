@@ -56,7 +56,7 @@ class Board:
         self.turn_white = not self.turn_white
 
     def get_str_color(self):
-        return "white" if self.turn_white else "black"
+        return "White" if self.turn_white else "Black"
 
     def print_board(self, possible_moves=[]) -> str:
         """
@@ -95,13 +95,13 @@ class Board:
         board_string += "    a | b | c | d | e | f | g | h"
         return board_string
 
-    def print_board_2(self):
+    def print_board_2(self, possible_moves=[]) -> str:
         board_string = "      a    b    c    d    e    f    g    h\n"
         board_string += "  ┌────┬────┬────┬────┬────┬────┬────┬────┐\n"
         for y in range(7, -1, -1):
             board_string += f"{y+1} "
             for x in range(8):
-                board_string += self.get_cell((x, y))
+                board_string += self.get_cell((x, y), possible_moves)
             if y > 0:
                 board_string += f"│ {y+1} \n  ├────┼────┼────┼────┼────┼────┼────┼────┤\n"
             else:
@@ -109,14 +109,27 @@ class Board:
         board_string += "      a    b    c    d    e    f    g    h\n"
         return board_string
 
-    def get_cell(self, coords):
+    def get_cell(self, coords: (), possible_moves: []):
         piece = self.find_piece_by_coordinate(coords)
 
+        colorful_symbol = "│   "
+
         if type(piece) is Piece:
-            # add color
-            return f"│   {piece.get_symbol()}   "
+            colorful_symbol += R if piece.white else B
+            if coords in possible_moves:
+                colorful_symbol += UNDERLINE + piece.get_symbol(0) + END_UNDERLINE + W + "   "
+            else:
+                colorful_symbol += piece.get_symbol() + W + "   "
         else:
-            return "│       "
+            if coords in possible_moves:
+                colorful_symbol += R if self.turn_white else B
+                colorful_symbol += "•" + W + "    "
+            else:
+                return "│       "
+        return colorful_symbol
+
+    def color_text(self, text, color):
+        return color + text + W
 
     def find_piece_by_coordinate(self, coordinate: ()):
         """Finds if coordinate is occupied or if there is a piece and returns it
@@ -148,7 +161,6 @@ class Board:
             list_out.append(move_pair_list)
         list_out.pop(0)
         return list_out
-
 
     def find_attacked_tiles(self, white):
         all_possible_moves = []

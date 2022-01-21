@@ -40,7 +40,7 @@ def user_input(board: Board, prompt: str) -> []:
     while True:
         inp = input(prompt).lower()
         if inp == "/attack":
-            print(board.print_board(board.find_attacked_tiles(board.turn_white)))
+            print(board.print_board_2(board.find_attacked_tiles(board.turn_white)))
         elif inp == "0":
             return 0
         elif check_if_user_input_coords_exists(inp):
@@ -87,12 +87,12 @@ def move_piece(board):
             print("There is no piece at the given coordinates. Please try again.")
 
     possible_moves = board.find_possible_moves(piece)
-    print(board.print_board(possible_moves))
+    print(board.print_board_2(possible_moves))
     while True:
         coords = user_input(board, f"Move {piece.figure_kind} at {code_notation_to_chess_notation(coords)} to "
                                    f"(in form \"a1\", 0 to deselect) : ")
         if coords == 0:
-            print("Piece deselected4444444444444.\n")  # is 44444444444444 on purpose
+            print("Piece deselected.\n")
             return move_piece(board)
         if coords in possible_moves:
             take_piece(board, coords)
@@ -113,10 +113,9 @@ def take_piece(board, coords) -> None:
 def start():
     board: Board = Board()  # not global, will be passed as a param to other functions
     print(board.an_game_to_an_move_list("17 1999.11.20 1-0 2851 None 51 date_false result_false welo_false belo_true edate_false setup_false fen_false result2_false oyrange_false blen_false ### W1.e4 B1.c6 W2.d4 B2.d5 W3.exd5 B3.cxd5 W4.Bd3 B4.Nc6 W5.c3 B5.Nf6 W6.Bf4 B6.Bg4 W7.Qb3 B7.Qd7 W8.Nd2 B8.e6 W9.Ngf3 B9.Bd6 W10.Ne5 B10.Bxe5 W11.dxe5 B11.Nh5 W12.Be3 B12.a6 W13.h3 B13.Nxe5 W14.Bf1 B14.Bf5 W15.g4 B15.Nd3+ W16.Bxd3 B16.Bxd3 W17.gxh5 B17.Rc8 W18.Rg1 B18.f6 W19.h6 B19.g6 W20.O-O-O B20.d4 W21.Bxd4 B21.Ke7 W22.Nf3 B22.e5 W23.Rxd3 B23.exd4 W24.Re1+ B24.Kf8 W25.Rxd4 B25.Qc6 W26.Qb4+ "))
-    print(board.print_board_2())
     # game loop
     while not board.game_over:
-        print(board)
+        print(board.print_board_2())
         print("Turn " + str(board.current_move) + ". ")
         move_piece(board)
 

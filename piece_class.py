@@ -24,9 +24,13 @@ class Piece:
     def get_pos(self):
         return self.coordinates
 
-    def get_symbol(self):
+    def get_symbol(self, start_index=6):
+        """
+        Returns UTF-8 chess figure symbol
+        :param start_index: 6 for full (black) pieces, 0 for empty (white) pieces
+        :return: UTF-8 chess figure symbol
+        """
         pieces = ''.join(chr(9812 + x) for x in range(12))
-        start_index = 0 if self.white else 6
         if self.figure_kind == "K":
             return pieces[start_index]
         if self.figure_kind == "Q":
