@@ -215,7 +215,7 @@ class Board:
                 # print(f"Piece to take: {piece_to_take}, coords: {coords}, turn: {self.get_str_color()}")
                 #if not self.will_king_be_in_check(piece, coords):
                 if piece.figure_kind == "K" and not attack:
-                    if piece_to_take.coordinates in self.find_attacked_tiles(piece.white):
+                   # if piece_to_take.coordinates in self.find_attacked_tiles(piece.white):
                         return
                 possible_move_array.append(coords)
 
