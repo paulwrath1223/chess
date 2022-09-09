@@ -1,5 +1,8 @@
 # chess
 
+## Overview
+a console chess player that can import and export chess games with the algebraic notation. This is still very much a work in progress, but ideally you would import many past professional games and associate different moves with the probability that the player making it won the game in order to make an AI.
+
 ## Chess notation
 - Chess notation combines the chess piece moved with the new square it has moved to, on the chessboard.
 - Chess notation uses abbreviations for each piece, using capitalized letters.
